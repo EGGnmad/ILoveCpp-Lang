@@ -10,7 +10,7 @@ using namespace ilovecpp;
 
 int main(int argc, char* argv[])
 {
-    string basicTemplateStart = "#include <iostream>\nint main(){\n";
+    string basicTemplateStart = "#include <iostream>\n#include <string>\nint main(){\n";
     string basicTemplateEnd = "return 0;\n}";
 
 

@@ -33,6 +33,7 @@ public:
 
     //Statement
     InitVariableStatement ParseInitVariableStatement();
+    OutVariableStatement ParseOutVariableStatement();
 
     //
     std::string ParseProgram();

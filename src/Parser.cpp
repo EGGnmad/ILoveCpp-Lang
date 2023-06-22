@@ -27,6 +27,9 @@ std::string Parser::ParseProgram(){
         if(curToken.type == Token::TokenType::IDENT){
             now = ParseInitVariableStatement().ToString();
         }
+        else if(curToken.type == Token::TokenType::OUT){
+            now = ParseOutVariableStatement().ToString();
+        }
         // else{
         //     throw SyntaxErrorException();
         // }
@@ -155,3 +158,15 @@ InitVariableStatement Parser::ParseInitVariableStatement(){
     return statement;
 }
 
+OutVariableStatement Parser::ParseOutVariableStatement(){
+    OutVariableStatement statement = OutVariableStatement();
+
+    AdvanceToken();
+    if(curToken.type != Token::TokenType::DLEFT) throw SyntaxErrorException();
+
+    AdvanceToken();
+
+    statement.value = ParseExpression();
+
+    return statement;
+}

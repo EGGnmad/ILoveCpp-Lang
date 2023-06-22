@@ -17,3 +17,12 @@ public:
         return type.ToString() + " " + ident.ToString() + " = " + value.ToString() + ";";
     }
 };
+
+class OutVariableStatement : ilovecpp::Statement{
+public:
+    ilovecpp::Expression value;
+    
+    std::string ToString(){
+        return "std::cout << " + value.ToString() + ";";
+    }
+};
