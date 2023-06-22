@@ -1,4 +1,5 @@
 #include "Token.hpp"
+#include <string>
 
 using namespace ilovecpp;
 
@@ -20,4 +21,6 @@ Token::Token(TokenType type, char ch){
 Token& Token::operator=(Token token){
     this->type = token.type;
     this->literal = token.literal;
+
+    return *this;
 }

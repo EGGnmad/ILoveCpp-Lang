@@ -1,16 +1,49 @@
+#include <fstream>
 #include <iostream>
-#include "Lexer.hpp"
-#include "Token.hpp"
 
+#include "ILoveCpp.hpp"
+#include "Lexer.hpp"
+#include "Parser.hpp"
 
 using namespace std;
 using namespace ilovecpp;
 
-int main(){
-    Lexer lexer = Lexer("let");
-    Token token = lexer.NextToken();
-    cout << (int)token.type << " " << token.literal << "\n";
+int main(int argc, char* argv[])
+{
+    string basicTemplateStart = "#include <iostream>\nint main(){\n";
+    string basicTemplateEnd = "return 0;\n}";
 
-    token = lexer.NextToken();
-    // cout << (int)token.type << " " << token.literal << "\n";
+
+    string outputPath = "a.cpp";
+	string filePath = argv[1];
+
+    string input;
+
+	// read File
+	ifstream openFile(filePath.data());
+	if( openFile.is_open() ){
+		string in;
+		while(getline(openFile, in)){
+			cout << in << endl;
+			input += in;
+		}
+		openFile.close();
+	}
+
+	// write File
+	ofstream writeFile(outputPath.data());
+	if( writeFile.is_open() ){
+        Lexer lexer = Lexer(input);
+        Parser parser = Parser(&lexer);
+
+        string output = parser.ParseProgram();
+
+        writeFile << basicTemplateStart;
+        writeFile << output;
+        writeFile << basicTemplateEnd;
+
+		writeFile.close();
+	}
+
+	return 0;
 }

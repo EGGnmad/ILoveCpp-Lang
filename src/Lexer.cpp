@@ -22,8 +22,15 @@ void Lexer::ReadChar(){
     this->readPosition++;
 }
 
+void Lexer::GoTo(int position){
+    this->readPosition = position;
+    ReadChar();   
+}
+
 Token Lexer::NextToken(){
     Token token;
+
+    this->SkipWhitespace();
 
     switch (this->ch) {
         // 구분자
@@ -33,7 +40,6 @@ Token Lexer::NextToken(){
         case ',':
             token = Token(Token::TokenType::COMMA, this->ch);
             break;
-        
         case '(':
             token = Token(Token::TokenType::LPAREN, this->ch);
             break;
@@ -51,11 +57,35 @@ Token Lexer::NextToken(){
             break;
 
         default:
-            if(Token::IsLetter(this->ch)){
+            // 연산자
+            if(Token::IsOperatorFirstCharacter(this->ch)){
+                token.literal = this->ReadOperator();
+                token.type = Token::LookUpOperator(token.literal);
+                return token;
+            }
+            // 문자
+            else if(Token::IsLetter(this->ch)){
                 token.literal = this->ReadIdentifier();
                 token.type = Token::LookUpIdent(token.literal);
                 return token;
             }
+
+            // 숫자
+            else if(Token::IsDigit(this->ch)){
+                token.literal = this->ReadNumber();
+                token.type = Token::LookNumberType(token.literal);
+                return token;
+            }
+
+            else if(Token::IsString(this->ch)){
+                token.literal = this->ReadString();
+                
+                if(token.literal == "ILLEGAL")
+                    token.type = Token::TokenType::ILLEGAL;
+                else
+                    token.type = Token::TokenType::STRING;
+            }
+
             else{
                 token = Token(Token::TokenType::ILLEGAL, this->ch);
             }
@@ -63,12 +93,11 @@ Token Lexer::NextToken(){
     }
 
     this->ReadChar();
-    // return token;
+    return token;
 }
 
 std::string Lexer::ReadIdentifier(){
     std::string ident;
-    int position = this->position;
 
     while(Token::IsLetter(this->ch)){
         ident += this->ch;
@@ -76,4 +105,47 @@ std::string Lexer::ReadIdentifier(){
     }
 
     return ident;
+}
+
+std::string Lexer::ReadNumber(){
+    std::string number;
+
+    while(Token::IsDigit(this->ch) || this->ch == '.'){
+        number += this->ch;
+        this->ReadChar();
+    }
+
+    return number;
+}
+
+std::string Lexer::ReadOperator(){
+    std::string op;
+
+    while(Token::IsOperatorCharacter(this->ch)){
+        op += this->ch;
+        this->ReadChar();
+    }
+
+    return op;
+}
+
+std::string Lexer::ReadString(){
+    std::string str;
+    str += '"';
+    this->ReadChar();
+
+    while(!Token::IsString(this->ch)){
+        if(this->ch == 0)
+            return "ILLEGAL";
+
+        str += this->ch;
+        this->ReadChar();
+    }
+
+    str += '"';
+    return str;
+}
+
+void Lexer::SkipWhitespace(){
+    while(this->ch == ' ' || this->ch == '\t' || this->ch == '\n' || this->ch == '\r') this->ReadChar();
 }
