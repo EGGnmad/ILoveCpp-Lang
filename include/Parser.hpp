@@ -32,11 +32,13 @@ public:
     OperatorExpression ParseOperatorExpression();
 
     //Statement
+    Statement ParseStatement();
+
     InitVariableStatement ParseInitVariableStatement();
     OutVariableStatement ParseOutVariableStatement();
+    IfStatement ParseIfStatement();
+    ElseStatement ParseElseStatement();
 
     //
-    std::string ParseProgram();
-
-    bool IsInitVariableStatement();
+    ProgramStatement ParseProgram();
 };

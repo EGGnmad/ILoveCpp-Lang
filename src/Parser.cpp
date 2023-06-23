@@ -17,26 +17,15 @@ void Parser::AdvanceToken(){
 }
 
 
-std::string Parser::ParseProgram(){
-    std::string result;
+ProgramStatement Parser::ParseProgram(){
+    ProgramStatement program;
 
-
-    while(curToken.type != Token::TokenType::ENDOFFILE){
-        std::string now;
-
-        if(curToken.type == Token::TokenType::IDENT){
-            now = ParseInitVariableStatement().ToString();
-        }
-        else if(curToken.type == Token::TokenType::OUT){
-            now = ParseOutVariableStatement().ToString();
-        }
-        // else{
-        //     throw SyntaxErrorException();
-        // }
-        result += now + '\n';
+    while(curToken.type != Token::TokenType::ENDOFFILE && curToken.type != Token::TokenType::RBRACE){
+        Statement statement = ParseStatement();
+        program.statements.push_back(statement);
     }
 
-    return result;
+    return program;
 }
 
 
@@ -70,10 +59,18 @@ OperatorNode Parser::ParseOperatorNode(){
 Expression Parser::ParseExpression(){
 
     //Value
-    if(curToken.type == Token::TokenType::IDENT || curToken.type == Token::TokenType::NUMBER_INT || curToken.type == Token::TokenType::NUMBER_FLOAT || curToken.type == Token::TokenType::STRING){
-        if(peekToken.type == Token::TokenType::PLUS || peekToken.type == Token::TokenType::MINUS || peekToken.type == Token::TokenType::MULTIPLY || peekToken.type == Token::TokenType::DIVIDE){
+    if(curToken.type == Token::TokenType::IDENT || curToken.type == Token::TokenType::NUMBER_INT || curToken.type == Token::TokenType::NUMBER_FLOAT || curToken.type == Token::TokenType::BOOLEAN || curToken.type == Token::TokenType::STRING){
+        if(peekToken.type == Token::TokenType::PLUS || peekToken.type == Token::TokenType::MINUS || peekToken.type == Token::TokenType::MULTIPLY || peekToken.type == Token::TokenType::DIVIDE || peekToken.type == Token::TokenType::LT || peekToken.type == Token::TokenType::GT){
             Expression expr;
             expr.str = ParseOperatorExpression().ToString();
+
+            return expr;
+        }
+        else if(peekToken.type == Token::TokenType::DLEFT){
+            Expression expr;
+            expr.str = ParseValueExpression().ToString();
+            AdvanceToken();
+            AdvanceToken();
 
             return expr;
         }
@@ -132,6 +129,25 @@ OperatorExpression Parser::ParseOperatorExpression(){
 
 
 // Statement
+Statement Parser::ParseStatement(){
+    Statement statement;
+
+    if(curToken.type == Token::TokenType::IDENT){
+        statement.str = ParseInitVariableStatement().ToString();
+    }
+    else if(curToken.type == Token::TokenType::OUT){
+        statement.str = ParseOutVariableStatement().ToString();
+    }
+    else if(curToken.type == Token::TokenType::IF){
+        statement.str = ParseIfStatement().ToString();
+    }
+    else if(curToken.type == Token::TokenType::ELSE){
+        statement.str = ParseElseStatement().ToString();
+    }
+    return statement;
+}
+
+
 InitVariableStatement Parser::ParseInitVariableStatement(){
     InitVariableStatement statement;
 
@@ -167,6 +183,42 @@ OutVariableStatement Parser::ParseOutVariableStatement(){
     AdvanceToken();
 
     statement.value = ParseExpression();
+
+    return statement;
+}
+
+IfStatement Parser::ParseIfStatement(){
+    IfStatement statement;
+    
+    AdvanceToken();
+    if(curToken.type != Token::TokenType::DLEFT) throw SyntaxErrorException();
+
+    AdvanceToken();
+    statement.condition = ParseExpression();
+
+    if(curToken.type != Token::TokenType::LBRACE) throw SyntaxErrorException();
+
+    AdvanceToken();
+    statement.program = ParseProgram();
+
+    AdvanceToken();
+
+    return statement;
+}
+
+ElseStatement Parser::ParseElseStatement(){
+    ElseStatement statement;
+
+    AdvanceToken();
+    if(curToken.type != Token::TokenType::DLEFT) throw SyntaxErrorException();
+
+    AdvanceToken();
+    if(curToken.type != Token::TokenType::LBRACE) throw SyntaxErrorException();
+
+    AdvanceToken();
+    statement.program = ParseProgram();
+
+    AdvanceToken();
 
     return statement;
 }

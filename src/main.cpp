@@ -10,7 +10,7 @@ using namespace ilovecpp;
 
 int main(int argc, char* argv[])
 {
-    string basicTemplateStart = "#include <iostream>\n#include <string>\nint main(){\n";
+    string basicTemplateStart = "#include <iostream>\n#include <string>\nusing namespace std;\nint main(){\n";
     string basicTemplateEnd = "return 0;\n}";
 
 
@@ -36,10 +36,10 @@ int main(int argc, char* argv[])
         Lexer lexer = Lexer(input);
         Parser parser = Parser(&lexer);
 
-        string output = parser.ParseProgram();
+        ProgramStatement output = parser.ParseProgram();
 
         writeFile << basicTemplateStart;
-        writeFile << output;
+        writeFile << output.ToString();
         writeFile << basicTemplateEnd;
 
 		writeFile.close();

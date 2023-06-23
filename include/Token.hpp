@@ -47,6 +47,7 @@ public:
         ELSE,
         RETURN,
         OUT,
+        IN,
     };
 
 public:
@@ -84,7 +85,7 @@ public:
         std::map<std::string, TokenType> keywords = {
             {"int", TokenType::TYPE_NUMBER_INT},
             {"float", TokenType::TYPE_NUMBER_FLOAT},
-            {"boolean", TokenType::TYPE_BOOLEAN},
+            {"bool", TokenType::TYPE_BOOLEAN},
             {"string", TokenType::TYPE_STRING},
 
             

@@ -69,11 +69,13 @@ Token Lexer::NextToken(){
                 token.type = Token::LookUpIdent(token.literal);
                 return token;
             }
-
             // 숫자
             else if(Token::IsDigit(this->ch)){
                 token.literal = this->ReadNumber();
                 token.type = Token::LookNumberType(token.literal);
+                if(token.type == Token::TokenType::NUMBER_FLOAT)
+                    token.literal += "f";
+
                 return token;
             }
 

@@ -29,7 +29,18 @@ public:
     ilovecpp::Token type;
 
     std::string ToString() override{
-        return type.literal;
+        switch (type.type) {
+            case ilovecpp::Token::TokenType::TYPE_NUMBER_INT:
+                return "int";
+            case ilovecpp::Token::TokenType::TYPE_NUMBER_FLOAT:
+                return "float";
+            case ilovecpp::Token::TokenType::TYPE_BOOLEAN:
+                return "bool";
+            case ilovecpp::Token::TokenType::TYPE_STRING:
+                return "std::string";
+            default:
+                return type.literal;
+        }
     }
 };
 
@@ -61,6 +72,14 @@ public:
                 break;
             case ilovecpp::Token::TokenType::DIVIDE:
                 str = "/";
+                break;
+            case ilovecpp::Token::TokenType::LT:
+                str = "<";
+                break;
+            case ilovecpp::Token::TokenType::GT:
+                str = ">";
+                break;
+            default:
                 break;
         }
 
