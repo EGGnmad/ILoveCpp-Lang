@@ -17,7 +17,7 @@ defined stream? variable?
 
 
 test
-```
+```c++
 main << int() << {
     a << int << 10;
     b << int << 12;
